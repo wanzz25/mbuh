@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wanzz Installer</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Bebas+Neue&family=Exo+2:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#07060a; --surface:#100f15; --surface2:#161420; --border:#2e2840;
+    --accent:#f5a623; --accent2:#ffcf6b; --accent3:#e8630a;
+    --danger:#ff3b5c; --success:#39d98a; --text:#e8dfc8; --text-dim:#7a6e8a;
+    --glow:0 0 24px rgba(245,166,35,0.35);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(245,166,35,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(245,166,35,0.025) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;top:-30%;right:-20%;width:700px;height:700px;background:radial-gradient(circle,rgba(245,166,35,0.07) 0%,transparent 65%);pointer-events:none;z-index:0;animation:orb 14s ease-in-out infinite alternate;}
+  @keyframes orb{from{transform:translate(0,0) scale(1);}to{transform:translate(-40px,60px) scale(1.1);}}
+  ::-webkit-scrollbar{width:5px;} ::-webkit-scrollbar-track{background:transparent;} ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+  .container{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:20px 18px;}
+
+  /* HEADER */
+  header{text-align:center;padding:40px 20px 28px;}
+  .wanzz-logo{display:inline-flex;align-items:center;gap:14px;margin-bottom:12px;}
+  .logo-icon{width:54px;height:54px;background:linear-gradient(135deg,var(--accent3),var(--accent));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 4px 20px rgba(245,166,35,0.4);animation:logo-pulse 3s ease-in-out infinite;}
+  @keyframes logo-pulse{0%,100%{box-shadow:0 4px 20px rgba(245,166,35,0.4);}50%{box-shadow:0 4px 36px rgba(245,166,35,0.7);}}
+  .logo-name{font-family:'Bebas Neue',sans-serif;font-size:46px;letter-spacing:4px;line-height:1;background:linear-gradient(135deg,var(--accent2),var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 12px rgba(245,166,35,0.4));}
+  .logo-sub{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:4px;color:var(--text-dim);margin-top:2px;}
+  .header-desc{color:var(--text-dim);font-size:14px;letter-spacing:1px;margin-top:6px;}
+  .version-badge{display:inline-block;background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.3);border-radius:20px;padding:3px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:2px;margin-top:10px;}
+
+  /* CONN BAR */
+  .conn-bar{display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);}
+  .conn-dot{width:8px;height:8px;border-radius:50%;background:var(--danger);transition:background 0.3s;}
+  .conn-dot.online{background:var(--success);animation:pulse-dot 2s ease infinite;}
+  @keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(0.7);}}
+
+  /* TABS */
+  .tabs{display:flex;gap:3px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:5px;margin-bottom:22px;flex-wrap:wrap;}
+  .tab-btn{flex:1;min-width:120px;padding:11px 14px;background:transparent;border:1px solid transparent;border-radius:7px;color:var(--text-dim);font-family:'Exo 2',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;text-transform:uppercase;}
+  .tab-btn:hover{color:var(--accent);border-color:rgba(245,166,35,0.25);background:rgba(245,166,35,0.06);}
+  .tab-btn.active{background:rgba(245,166,35,0.13);border-color:var(--accent);color:var(--accent);box-shadow:var(--glow);}
+  .tab-content{display:none;}
+  .tab-content.active{display:block;animation:fadeUp 0.28s ease;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+  /* CARD */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px 24px;margin-bottom:18px;position:relative;overflow:hidden;}
+  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent3),var(--accent),var(--accent2));}
+  .card-title{font-family:'Exo 2',sans-serif;font-size:13px;font-weight:800;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+
+  /* FORM */
+  .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:15px;}
+  .form-group{display:flex;flex-direction:column;gap:6px;}
+  .form-group.full{grid-column:1/-1;}
+  label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent2);letter-spacing:1.5px;text-transform:uppercase;}
+  input{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:11px 14px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;transition:all 0.2s;width:100%;outline:none;}
+  input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(245,166,35,0.12);}
+  input::placeholder{color:var(--text-dim);}
+  .input-hint{font-size:10px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;}
+
+  /* BUTTONS */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 26px;border:none;border-radius:7px;font-family:'Exo 2',sans-serif;font-size:12px;font-weight:800;letter-spacing:1.5px;cursor:pointer;transition:all 0.2s;text-transform:uppercase;}
+  .btn-primary{background:linear-gradient(135deg,var(--accent3),var(--accent));color:#07060a;box-shadow:0 4px 18px rgba(245,166,35,0.35);}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(245,166,35,0.55);}
+  .btn-success{background:linear-gradient(135deg,#27a065,var(--success));color:#07060a;}
+  .btn-success:hover{transform:translateY(-2px);}
+  .btn-danger{background:linear-gradient(135deg,#c4203a,var(--danger));color:white;}
+  .btn-outline{background:rgba(245,166,35,0.08);border:1px solid var(--accent);color:var(--accent);}
+  .btn-outline:hover{background:rgba(245,166,35,0.18);}
+  .btn-sm{padding:7px 14px;font-size:10px;}
+  .btn:disabled{opacity:0.45;cursor:not-allowed;transform:none!important;}
+  .btn-row{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;}
+
+  /* TERMINAL */
+  .terminal{background:#030208;border:1px solid var(--border);border-radius:9px;overflow:hidden;margin-top:14px;}
+  .terminal-header{background:var(--surface2);padding:9px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+  .terminal-dots{display:flex;gap:6px;}
+  .terminal-dots span{width:10px;height:10px;border-radius:50%;}
+  .dot-r{background:#ff5f57;}.dot-y{background:#febc2e;}.dot-g{background:#28c840;}
+  .terminal-title{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:1.5px;text-transform:uppercase;}
+  .terminal-body{padding:16px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.75;height:280px;overflow-y:auto;color:#c8a84a;}
+  .log-line{margin-bottom:1px;}
+  .log-info{color:var(--accent);} .log-success{color:var(--success);} .log-error{color:var(--danger);} .log-warn{color:var(--accent3);} .log-dim{color:var(--text-dim);}
+  .cursor-blink::after{content:'▋';animation:blink 1s step-end infinite;color:var(--accent);}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+  .mini-btn{background:none;border:1px solid var(--border);color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:9px;padding:4px 10px;cursor:pointer;border-radius:4px;letter-spacing:1px;text-transform:uppercase;transition:all 0.2s;}
+  .mini-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+  /* PROGRESS */
+  .progress-bar{height:5px;background:var(--surface2);border-radius:3px;overflow:hidden;margin-top:12px;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent3),var(--accent),var(--accent2));border-radius:3px;width:0%;transition:width 0.6s ease;position:relative;overflow:hidden;}
+  .progress-fill::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.35),transparent);animation:shimmer 1.4s infinite;}
+  @keyframes shimmer{to{left:200%;}}
+
+  /* STATUS */
+  .status-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+  .status-badge.idle{background:rgba(122,110,138,0.15);color:var(--text-dim);border:1px solid rgba(122,110,138,0.3);}
+  .status-badge.running{background:rgba(245,166,35,0.15);color:var(--accent);border:1px solid rgba(245,166,35,0.35);}
+  .status-badge.success{background:rgba(57,217,138,0.12);color:var(--success);border:1px solid rgba(57,217,138,0.3);}
+  .status-badge.error{background:rgba(255,59,92,0.12);color:var(--danger);border:1px solid rgba(255,59,92,0.3);}
+  .status-dot{width:7px;height:7px;border-radius:50%;background:currentColor;}
+  .status-badge.running .status-dot{animation:pulse-dot 1.2s ease-in-out infinite;}
+
+  /* RESULT */
+  .result-box{background:rgba(57,217,138,0.05);border:1px solid rgba(57,217,138,0.22);border-radius:10px;padding:20px;margin-top:18px;display:none;}
+  .result-box.visible{display:block;animation:fadeUp 0.4s ease;}
+  .result-title{font-family:'Exo 2',sans-serif;font-size:14px;font-weight:800;color:var(--success);margin-bottom:16px;display:flex;align-items:center;gap:8px;letter-spacing:1px;}
+  .result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:14px;}
+  .result-item{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:12px 14px;}
+  .result-item-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:5px;}
+  .result-item-value{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent2);display:flex;align-items:center;gap:8px;}
+  .copy-btn{background:none;border:none;cursor:pointer;color:var(--text-dim);font-size:13px;transition:color 0.2s;padding:2px;}
+  .copy-btn:hover{color:var(--accent);}
+
+  /* VPS MONITOR */
+  .vps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:13px;margin-top:14px;}
+  .vps-card{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:16px;transition:all 0.2s;}
+  .vps-card:hover{border-color:rgba(245,166,35,0.35);transform:translateY(-2px);}
+  .vps-card.online{border-left:3px solid var(--success);}
+  .vps-card.offline{border-left:3px solid var(--danger);}
+  .vps-card.checking{border-left:3px solid var(--accent);}
+  .vps-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+  .vps-ip{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--text);font-weight:700;}
+  .vps-label-text{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);text-transform:uppercase;margin-top:3px;letter-spacing:1px;}
+  .vps-stats{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px;}
+  .vps-stat{background:var(--surface);border-radius:5px;padding:8px 10px;}
+  .vps-stat-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;}
+  .vps-stat-value{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);margin-top:3px;}
+  .vps-uptime{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-dim);margin-top:6px;line-height:1.5;word-break:break-all;}
+  .vps-actions{display:flex;gap:7px;margin-top:11px;}
+  .add-vps-row{display:flex;gap:9px;margin-bottom:14px;flex-wrap:wrap;}
+  .add-vps-row input{flex:1;min-width:160px;}
+
+  /* ALERT */
+  .alert{border-radius:7px;padding:11px 15px;font-family:'JetBrains Mono',monospace;font-size:11px;margin-bottom:14px;display:flex;align-items:flex-start;gap:10px;line-height:1.6;}
+  .alert-info{background:rgba(245,166,35,0.07);border:1px solid rgba(245,166,35,0.22);color:var(--accent);}
+  .alert-warn{background:rgba(232,99,10,0.07);border:1px solid rgba(232,99,10,0.25);color:var(--accent3);}
+
+  /* NOTIF */
+  .notif{position:fixed;bottom:22px;right:22px;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:13px 18px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text);z-index:9999;transform:translateY(100px);opacity:0;transition:all 0.3s cubic-bezier(.34,1.56,.64,1);max-width:320px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,0.5);}
+  .notif.show{transform:translateY(0);opacity:1;}
+  .notif.success{border-color:var(--success);}
+  .notif.error{border-color:var(--danger);}
+
+  .divider{border:none;border-top:1px solid var(--border);margin:18px 0;}
+  .section-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+  .code-block{background:#030208;border:1px solid var(--border);border-radius:6px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);line-height:1.8;margin-bottom:14px;}
+  .wanzz-watermark{text-align:center;padding:28px 0 16px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:2px;opacity:0.5;}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="wanzz-logo">
+      <div class="logo-icon">⚡</div>
+      <div class="logo-text-wrap">
+        <div class="logo-name">WANZZ</div>
+        <div class="logo-sub">Installer Tools</div>
+      </div>
+    </div>
+    <p class="header-desc">Automated Pterodactyl Panel &amp; Wings Deployment via Real SSH</p>
+    <div class="version-badge">v2.0 — REAL SSH EDITION</div>
+  </header>
+
+  <div class="conn-bar" id="conn-bar">
+    <div class="conn-dot" id="conn-dot"></div>
+    <span id="conn-text">Memeriksa koneksi backend...</span>
+    <span style="margin-left:auto;font-size:10px;color:var(--text-dim)" id="backend-url-label">localhost:3000</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('install',this)">🚀 INSTALL PANEL</button>
+    <button class="tab-btn" onclick="switchTab('wings',this)">🦅 START WINGS</button>
+    <button class="tab-btn" onclick="switchTab('monitor',this)">📡 VPS MONITOR</button>
+    <button class="tab-btn" onclick="switchTab('settings',this)">⚙️ SETTINGS</button>
+  </div>
+
+  <!-- ══ INSTALL PANEL ══ -->
+  <div id="tab-install" class="tab-content active">
+    <div class="alert alert-warn">⚠️ &nbsp;Butuh 10–20 menit. Gunakan VPS fresh Ubuntu 20.04/22.04. Pastikan backend <code>server.js</code> aktif dulu.</div>
+
+    <div class="card">
+      <div class="card-title"><span>🖥️</span> Server SSH</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>IP VPS</label>
+          <input type="text" id="ip_vps" placeholder="103.x.x.x">
+          <span class="input-hint">IP address VPS target</span>
+        </div>
+        <div class="form-group">
+          <label>Password Root</label>
+          <input type="password" id="pw_vps" placeholder="••••••••">
+          <span class="input-hint">Password SSH root</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span>🌐</span> Domain</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Domain Panel</label>
+          <input type="text" id="domain_panel" placeholder="panel.example.com">
+        </div>
+        <div class="form-group">
+          <label>Domain Node/Wings</label>
+          <input type="text" id="domain_node" placeholder="node.example.com">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span>⚙️</span> Resources</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>RAM (MB)</label>
+          <input type="number" id="ram_server" placeholder="100000">
+          <span class="input-hint">Contoh: 100000 ≈ 100 GB</span>
+        </div>
+        <div class="form-group">
+          <label>Password Admin Panel</label>
+          <input type="text" id="panel_pass" placeholder="admin001" value="admin001">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span>🚀</span> Deploy
+        <div id="install-status" class="status-badge idle" style="margin-left:auto"><div class="status-dot"></div> IDLE</div>
+      </div>
+
+      <div class="section-label">Command Preview</div>
+      <div class="terminal" style="margin-top:0">
+        <div class="terminal-header">
+          <div class="terminal-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+          <div class="terminal-title">WANZZ CMD</div>
+          <button class="mini-btn" onclick="copyCommand()">COPY</button>
+        </div>
+        <div class="terminal-body" id="cmd-preview" style="height:68px;color:var(--accent)">
+          <span class="log-dim"># Isi form di atas...</span>
+        </div>
+      </div>
+
+      <div class="progress-bar" id="install-progress" style="display:none">
+        <div class="progress-fill" id="install-fill"></div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;">
+        <div class="section-label" style="margin:0">Live SSH Log</div>
+        <button class="mini-btn" onclick="clearLog('install-log')">CLEAR</button>
+      </div>
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+          <div class="terminal-title">WANZZ — REAL SSH OUTPUT</div>
+        </div>
+        <div class="terminal-body" id="install-log">
+          <div class="log-line log-dim">Menunggu instalasi dimulai...</div>
+          <div class="log-line cursor-blink"></div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btn-install" onclick="startInstall()">🚀 &nbsp;MULAI INSTALASI</button>
+        <button class="btn btn-danger btn-sm" onclick="stopInstall()">⛔ STOP</button>
+      </div>
+    </div>
+
+    <div class="result-box" id="install-result">
+      <div class="result-title">✅ &nbsp;INSTALASI WANZZ BERHASIL!</div>
+      <div class="result-grid" id="install-result-grid"></div>
+      <div class="btn-row">
+        <button class="btn btn-success btn-sm" id="btn-open-panel">🌐 Buka Panel</button>
+        <button class="btn btn-outline btn-sm" onclick="copyResultAll()">📋 Copy Info</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ START WINGS ══ -->
+  <div id="tab-wings" class="tab-content">
+    <div class="alert alert-info">ℹ️ &nbsp;Jalankan setelah panel terinstall. Ambil token dari panel → Nodes → Configuration Token.</div>
+    <div class="card">
+      <div class="card-title"><span>🦅</span> Wings SSH Config</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>IP VPS</label>
+          <input type="text" id="w_ip" placeholder="103.x.x.x">
+        </div>
+        <div class="form-group">
+          <label>Password Root</label>
+          <input type="password" id="w_pw" placeholder="••••••••">
+        </div>
+        <div class="form-group full">
+          <label>Token Wings</label>
+          <input type="text" id="w_token" placeholder="cd /etc/pterodactyl && wings configure --panel-url ...">
+          <span class="input-hint">Dari panel → Nodes → klik nama node → Configuration</span>
+        </div>
+      </div>
+      <hr class="divider">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+        <span style="font-family:'Exo 2',sans-serif;font-size:13px;font-weight:800;color:var(--accent);letter-spacing:2px;text-transform:uppercase;">📡 Status</span>
+        <div id="wings-status" class="status-badge idle" style="margin-left:auto"><div class="status-dot"></div> IDLE</div>
+      </div>
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+          <div class="terminal-title">WANZZ — WINGS SSH LOG</div>
+          <button class="mini-btn" onclick="clearLog('wings-log')">CLEAR</button>
+        </div>
+        <div class="terminal-body" id="wings-log">
+          <div class="log-line log-dim">Menunggu wings dijalankan...</div>
+          <div class="log-line cursor-blink"></div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-success" onclick="startWings()">🦅 &nbsp;START WINGS</button>
+        <button class="btn btn-danger btn-sm" onclick="stopWings()">⛔ STOP</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ VPS MONITOR ══ -->
+  <div id="tab-monitor" class="tab-content">
+    <div class="card">
+      <div class="card-title"><span>➕</span> Tambah VPS</div>
+      <div class="add-vps-row">
+        <input type="text" id="m_ip" placeholder="IP Address">
+        <input type="text" id="m_label" placeholder="Label (VPS SG-01)">
+        <input type="password" id="m_pass" placeholder="Password Root">
+        <button class="btn btn-primary btn-sm" onclick="addVPS()">+ TAMBAH</button>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <div class="section-label">Daftar VPS</div>
+        <div style="display:flex;gap:7px;">
+          <button class="btn btn-outline btn-sm" onclick="checkAllVPS()">🔄 CEK SEMUA</button>
+          <button class="btn btn-danger btn-sm" onclick="clearAllVPS()">🗑 HAPUS</button>
+        </div>
+      </div>
+      <div class="vps-grid" id="vps-grid"></div>
+      <div id="vps-empty" style="text-align:center;padding:40px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:11px;line-height:2;">
+        📡 Belum ada VPS.<br>Masukkan IP di atas lalu klik TAMBAH.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span>📊</span> Summary</div>
+      <div class="result-grid">
+        <div class="result-item"><div class="result-item-label">Total</div><div class="result-item-value" id="s-total">0</div></div>
+        <div class="result-item"><div class="result-item-label">Online</div><div class="result-item-value" style="color:var(--success)" id="s-online">0</div></div>
+        <div class="result-item"><div class="result-item-label">Offline</div><div class="result-item-value" style="color:var(--danger)" id="s-offline">0</div></div>
+        <div class="result-item"><div class="result-item-label">Checking</div><div class="result-item-value" style="color:var(--accent)" id="s-checking">0</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SETTINGS ══ -->
+  <div id="tab-settings" class="tab-content">
+    <div class="card">
+      <div class="card-title"><span>⚙️</span> Backend URL</div>
+      <div class="form-group" style="margin-bottom:16px;">
+        <label>URL Server Backend</label>
+        <input type="text" id="backend-input" value="http://localhost:3000">
+        <span class="input-hint">Ubah jika server.js dijalankan di VPS/host lain</span>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary btn-sm" onclick="saveBackendUrl()">💾 SIMPAN & TEST</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span>📖</span> Cara Setup Backend</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;line-height:2;color:var(--text-dim);">
+        <div style="color:var(--accent2);margin-bottom:6px;">▸ Taruh server.js &amp; wanzz-installer.html di 1 folder</div>
+        <div class="code-block">npm install express ssh2 cors</div>
+        <div style="color:var(--accent2);margin-bottom:6px;">▸ Jalankan server:</div>
+        <div class="code-block">node server.js</div>
+        <div style="color:var(--accent2);margin-bottom:6px;">▸ Buka di browser:</div>
+        <div class="code-block">http://localhost:3000/wanzz-installer.html</div>
+        <div style="color:var(--text-dim);margin-top:8px;">Setelah backend aktif, indikator di atas akan berubah hijau ✅ dan semua fitur SSH berfungsi nyata.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wanzz-watermark">⚡ WANZZ INSTALLER — REAL SSH DEPLOYMENT ENGINE</div>
+</div>
+
+<div class="notif" id="notif"></div>
+
+<script>
+// ─── CONFIG ───
+let BACKEND = localStorage.getItem('wanzz_backend') || 'http://localhost:3000';
+document.getElementById('backend-input').value = BACKEND;
+document.getElementById('backend-url-label').textContent = BACKEND.replace('http://','');
+
+function saveBackendUrl() {
+  BACKEND = document.getElementById('backend-input').value.trim().replace(/\/$/,'');
+  localStorage.setItem('wanzz_backend', BACKEND);
+  document.getElementById('backend-url-label').textContent = BACKEND.replace('http://','');
+  showNotif('Backend URL disimpan!','success');
+  checkBackend();
+}
+
+// ─── CHECK BACKEND ───
+async function checkBackend() {
+  const dot = document.getElementById('conn-dot');
+  const txt = document.getElementById('conn-text');
+  try {
+    const r = await fetch(BACKEND + '/health', { signal: AbortSignal.timeout(4000) });
+    if (r.ok) {
+      dot.classList.add('online');
+      txt.textContent = 'Backend aktif ✅ — SSH siap digunakan';
+      txt.style.color = 'var(--success)';
+    } else throw new Error();
+  } catch {
+    dot.classList.remove('online');
+    txt.textContent = 'Backend offline — jalankan: node server.js';
+    txt.style.color = 'var(--danger)';
+  }
+}
+checkBackend();
+setInterval(checkBackend, 10000);
+
+// ─── TAB ───
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+// ─── NOTIF ───
+function showNotif(msg, type='success') {
+  const n = document.getElementById('notif');
+  n.textContent = (type==='success'?'✅ ':type==='error'?'❌ ':'ℹ️ ') + msg;
+  n.className = `notif ${type} show`;
+  setTimeout(() => n.classList.remove('show'), 3500);
+}
+
+// ─── LOG ───
+function appendLog(logId, msg, type='') {
+  const el = document.getElementById(logId);
+  const cursor = el.querySelector('.cursor-blink');
+  if (cursor) cursor.remove();
+  const d = document.createElement('div');
+  d.className = 'log-line' + (type?' log-'+type:'');
+  const t = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  d.textContent = `[${t}] ${msg}`;
+  el.appendChild(d);
+  const c = document.createElement('div');
+  c.className = 'log-line cursor-blink';
+  el.appendChild(c);
+  el.scrollTop = el.scrollHeight;
+}
+function clearLog(id) {
+  document.getElementById(id).innerHTML = '<div class="log-line log-dim">Log cleared.</div><div class="log-line cursor-blink"></div>';
+}
+function setStatus(id, state, label) {
+  const el = document.getElementById(id);
+  el.className = `status-badge ${state}`;
+  el.innerHTML = `<div class="status-dot"></div> ${label}`;
+}
+
+// ─── PREVIEW ───
+function updatePreview() {
+  const ip  = document.getElementById('ip_vps').value||'IP_VPS';
+  const dp  = document.getElementById('domain_panel').value||'panel.example.com';
+  const dn  = document.getElementById('domain_node').value||'node.example.com';
+  const ram = document.getElementById('ram_server').value||'100000';
+  document.getElementById('cmd-preview').innerHTML =
+    `<span style="color:var(--accent2)">$ </span><span style="color:#fff">.installpanel ${ip}|••••|${dp}|${dn}|${ram}</span>`;
+}
+['ip_vps','pw_vps','domain_panel','domain_node','ram_server','panel_pass']
+  .forEach(id => document.getElementById(id)?.addEventListener('input', updatePreview));
+
+function copyCommand() {
+  const ip=document.getElementById('ip_vps').value;
+  const dp=document.getElementById('domain_panel').value;
+  const dn=document.getElementById('domain_node').value;
+  const ram=document.getElementById('ram_server').value;
+  copyText(`.installpanel ${ip}|[pw]|${dp}|${dn}|${ram}`);
+}
+
+// ─── INSTALL ───
+let installSSE = null;
+
+async function startInstall() {
+  const ip = document.getElementById('ip_vps').value.trim();
+  const pw = document.getElementById('pw_vps').value.trim();
+  const dp = document.getElementById('domain_panel').value.trim();
+  const dn = document.getElementById('domain_node').value.trim();
+  const ram = document.getElementById('ram_server').value.trim();
+  const pp = document.getElementById('panel_pass').value.trim()||'admin001';
+
+  if (!ip||!pw||!dp||!dn||!ram) { showNotif('Lengkapi semua field!','error'); return; }
+
+  document.getElementById('btn-install').disabled = true;
+  document.getElementById('install-result').classList.remove('visible');
+  setStatus('install-status','running','RUNNING');
+  document.getElementById('install-progress').style.display = 'block';
+  document.getElementById('install-fill').style.width = '0%';
+  clearLog('install-log');
+  appendLog('install-log','Menghubungi backend Wanzz...','info');
+
+  try {
+    const resp = await fetch(BACKEND+'/install', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ip, password:pw, domainPanel:dp, domainNode:dn, ram, panelPass:pp})
+    });
+    if (!resp.ok) {
+      const e = await resp.json();
+      appendLog('install-log','Error: '+(e.error||'Unknown'),'error');
+      setStatus('install-status','error','ERROR');
+      document.getElementById('btn-install').disabled = false;
+      return;
+    }
+    const {jobId} = await resp.json();
+    appendLog('install-log',`SSH job dimulai [${jobId}]`,'info');
+
+    if (installSSE) installSSE.close();
+    installSSE = new EventSource(`${BACKEND}/events/${jobId}`);
+    installSSE.onmessage = e => {
+      const {type, data} = JSON.parse(e.data);
+      if (type==='log') appendLog('install-log', data.msg, data.type||'');
+      if (type==='progress') document.getElementById('install-fill').style.width = data.pct+'%';
+      if (type==='done') {
+        installSSE.close(); installSSE=null;
+        setStatus('install-status','success','DONE');
+        document.getElementById('btn-install').disabled=false;
+        showResult(data.ip, data.domain, pp);
+        showNotif('Panel Wanzz berhasil diinstall! 🎉','success');
+      }
+      if (type==='error') {
+        installSSE.close(); installSSE=null;
+        setStatus('install-status','error','ERROR');
+        appendLog('install-log','FATAL: '+data.msg,'error');
+        document.getElementById('btn-install').disabled=false;
+        showNotif('Instalasi gagal: '+data.msg,'error');
+      }
+    };
+    installSSE.onerror = () => appendLog('install-log','Koneksi SSE terputus.','warn');
+  } catch(err) {
+    appendLog('install-log','Tidak bisa konek backend: '+err.message,'error');
+    appendLog('install-log','→ Jalankan: node server.js','warn');
+    setStatus('install-status','error','ERROR');
+    document.getElementById('btn-install').disabled=false;
+    showNotif('Backend offline!','error');
+  }
+}
+
+function stopInstall() {
+  if (installSSE) { installSSE.close(); installSSE=null; }
+  setStatus('install-status','error','STOPPED');
+  appendLog('install-log','Dihentikan oleh user.','error');
+  document.getElementById('btn-install').disabled=false;
+}
+
+function showResult(ip, dp, pass) {
+  document.getElementById('install-result-grid').innerHTML = `
+    <div class="result-item"><div class="result-item-label">Username</div><div class="result-item-value">admin <button class="copy-btn" onclick="copyText('admin')">📋</button></div></div>
+    <div class="result-item"><div class="result-item-label">Password</div><div class="result-item-value">${pass} <button class="copy-btn" onclick="copyText('${pass}')">📋</button></div></div>
+    <div class="result-item"><div class="result-item-label">IP VPS</div><div class="result-item-value">${ip} <button class="copy-btn" onclick="copyText('${ip}')">📋</button></div></div>
+    <div class="result-item"><div class="result-item-label">URL Panel</div><div class="result-item-value">${dp} <button class="copy-btn" onclick="copyText('https://${dp}')">📋</button></div></div>
+  `;
+  document.getElementById('btn-open-panel').onclick = () => window.open('https://'+dp,'_blank');
+  document.getElementById('install-result').classList.add('visible');
+}
+
+function copyResultAll() {
+  const pass=document.getElementById('panel_pass').value||'admin001';
+  copyText(`[Wanzz Installer]\nIP: ${document.getElementById('ip_vps').value}\nURL: https://${document.getElementById('domain_panel').value}\nUsername: admin\nPassword: ${pass}`);
+}
+
+// ─── WINGS ───
+let wingsSSE = null;
+
+async function startWings() {
+  const ip = document.getElementById('w_ip').value.trim();
+  const pw = document.getElementById('w_pw').value.trim();
+  const token = document.getElementById('w_token').value.trim();
+  if (!ip||!pw||!token) { showNotif('Isi semua field Wings!','error'); return; }
+
+  setStatus('wings-status','running','CONNECTING');
+  clearLog('wings-log');
+  appendLog('wings-log','Menghubungi backend...','info');
+
+  try {
+    const resp = await fetch(BACKEND+'/wings', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ip, password:pw, token})
+    });
+    const {jobId} = await resp.json();
+    if (wingsSSE) wingsSSE.close();
+    wingsSSE = new EventSource(`${BACKEND}/events/${jobId}`);
+    wingsSSE.onmessage = e => {
+      const {type,data} = JSON.parse(e.data);
+      if (type==='log') appendLog('wings-log',data.msg,data.type||'');
+      if (type==='done') { wingsSSE.close(); wingsSSE=null; setStatus('wings-status','success','RUNNING'); showNotif('Wings aktif! 🦅','success'); }
+      if (type==='error') { wingsSSE.close(); wingsSSE=null; setStatus('wings-status','error','ERROR'); showNotif('Wings gagal: '+data.msg,'error'); }
+    };
+  } catch(err) {
+    appendLog('wings-log','Backend offline: '+err.message,'error');
+    setStatus('wings-status','error','ERROR');
+    showNotif('Backend offline!','error');
+  }
+}
+
+function stopWings() {
+  if (wingsSSE) { wingsSSE.close(); wingsSSE=null; }
+  setStatus('wings-status','error','STOPPED');
+  appendLog('wings-log','Dihentikan oleh user.','error');
+}
+
+// ─── VPS MONITOR ───
+let vpsList = [];
+try { vpsList = JSON.parse(localStorage.getItem('wanzz_vps')||'[]'); } catch(e) { vpsList=[]; }
+function saveVPS() { try { localStorage.setItem('wanzz_vps', JSON.stringify(vpsList)); } catch(e){} }
+
+function renderVPS() {
+  const grid = document.getElementById('vps-grid');
+  const empty = document.getElementById('vps-empty');
+  if (!vpsList.length) { grid.innerHTML=''; empty.style.display='block'; updateSummary(); return; }
+  empty.style.display='none';
+  grid.innerHTML = vpsList.map((v,i) => {
+    const sc = v.status==='online'?'online':v.status==='offline'?'offline':'checking';
+    const bc = v.status==='online'?'success':v.status==='offline'?'error':'running';
+    const bl = v.status==='online'?'ONLINE':v.status==='offline'?'OFFLINE':'CHECKING';
+    return `<div class="vps-card ${sc}">
+      <div class="vps-card-header">
+        <div><div class="vps-ip">${v.ip}</div><div class="vps-label-text">${v.label||'VPS Server'}</div></div>
+        <div class="status-badge ${bc}"><div class="status-dot"></div> ${bl}</div>
+      </div>
+      ${v.status==='online'?`
+      <div class="vps-stats">
+        <div class="vps-stat"><div class="vps-stat-label">Ping</div><div class="vps-stat-value">${v.ping||'—'} ms</div></div>
+        <div class="vps-stat"><div class="vps-stat-label">Last Check</div><div class="vps-stat-value">${v.lastCheck||'—'}</div></div>
+      </div>${v.uptime?`<div class="vps-uptime">${v.uptime}</div>`:''}`
+      :`<div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);margin-top:8px;">Last: ${v.lastCheck||'Belum dicek'}</div>`}
+      <div class="vps-actions">
+        <button class="btn btn-outline btn-sm" style="flex:1" onclick="checkSingleVPS(${i})">🔄 CEK</button>
+        <button class="btn btn-danger btn-sm" onclick="removeVPS(${i})">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+  updateSummary();
+}
+
+function updateSummary() {
+  document.getElementById('s-total').textContent=vpsList.length;
+  document.getElementById('s-online').textContent=vpsList.filter(v=>v.status==='online').length;
+  document.getElementById('s-offline').textContent=vpsList.filter(v=>v.status==='offline').length;
+  document.getElementById('s-checking').textContent=vpsList.filter(v=>v.status==='checking').length;
+}
+
+function addVPS() {
+  const ip=document.getElementById('m_ip').value.trim();
+  const label=document.getElementById('m_label').value.trim();
+  const pass=document.getElementById('m_pass').value.trim();
+  if (!ip) { showNotif('Masukkan IP!','error'); return; }
+  if (vpsList.find(v=>v.ip===ip)) { showNotif('IP sudah ada!','error'); return; }
+  vpsList.push({ip,label,pass,status:'checking',ping:null,lastCheck:null,uptime:''});
+  saveVPS(); renderVPS();
+  document.getElementById('m_ip').value='';
+  document.getElementById('m_label').value='';
+  document.getElementById('m_pass').value='';
+  showNotif(`VPS ${ip} ditambahkan!`,'success');
+  checkSingleVPS(vpsList.length-1);
+}
+
+function removeVPS(i) { vpsList.splice(i,1); saveVPS(); renderVPS(); showNotif('VPS dihapus.'); }
+function clearAllVPS() { if(!confirm('Hapus semua VPS?'))return; vpsList=[]; saveVPS(); renderVPS(); }
+
+async function checkSingleVPS(i) {
+  vpsList[i].status='checking'; renderVPS();
+  try {
+    const r = await fetch(BACKEND+'/check-vps', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ip:vpsList[i].ip, password:vpsList[i].pass})
+    });
+    const d = await r.json();
+    vpsList[i].status=d.status; vpsList[i].ping=d.ping; vpsList[i].uptime=d.uptime||''; vpsList[i].lastCheck=new Date().toLocaleTimeString('id-ID');
+  } catch {
+    vpsList[i].status='offline'; vpsList[i].ping=null; vpsList[i].lastCheck=new Date().toLocaleTimeString('id-ID');
+  }
+  saveVPS(); renderVPS();
+  const v=vpsList[i];
+  showNotif(`${v.ip}: ${v.status==='online'?'ONLINE ✅ ('+v.ping+'ms)':'OFFLINE ❌'}`, v.status==='online'?'success':'error');
+}
+
+async function checkAllVPS() {
+  if (!vpsList.length) { showNotif('Tidak ada VPS!','error'); return; }
+  showNotif(`Mengecek ${vpsList.length} VPS...`,'');
+  for (let i=0;i<vpsList.length;i++) { await checkSingleVPS(i); await new Promise(r=>setTimeout(r,200)); }
+}
+
+function copyText(t) { navigator.clipboard.writeText(t).then(()=>showNotif('Disalin!','success')); }
+
+// INIT
+renderVPS(); updatePreview();
+</script>
+</body>
+</html>
